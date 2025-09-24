@@ -1,5 +1,5 @@
 # Use a newer Python base image with latest security patches
-FROM python:3.13.6-slim-bookworm
+FROM python:3.13.6-alpine
 
 # Set the working directory inside the container
 WORKDIR /app
