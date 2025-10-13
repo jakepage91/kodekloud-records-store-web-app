@@ -7,7 +7,7 @@ WORKDIR /app
 # Copy the requirements first (for better Docker caching)
 COPY src/requirements.txt .
 
-RUN pip install --upgrade pip==25.2
+RUN pip install --upgrade pip
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
