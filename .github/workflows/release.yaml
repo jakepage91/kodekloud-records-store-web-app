@@ -129,11 +129,14 @@ jobs:
       - name: Install Security Tools
         run: |
           source venv/bin/activate
+          pip install --upgrade pip>=25.3
           pip install pip-audit
 
       - name: Scan for Vulnerable Dependencies
         run: |
           source venv/bin/activate
+          echo "🔍 Verifying pip version before security scan..."
+          pip --version
           pip-audit --strict
           echo "✅ No critical vulnerabilities found"
 
