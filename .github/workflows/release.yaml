@@ -1,9 +1,11 @@
 name: Progressive Config Management & Secure Release Pipeline
 
 on:
-  # push:
-    # branches:
-    #   - main
+  push:
+    branches:
+      - main
+      - test
+
   pull_request:
     types: [closed]
     branches:
@@ -28,9 +30,9 @@ on:
 # Step 4: Apply least privilege permissions  
 # 👇 Uncomment in Step 4: Secure Authentication
 # permissions:
-#   contents: read      # Can read repository
-#   packages: write     # Can push Docker images
-#   id-token: write     # Can authenticate with cloud
+  contents: read      # Can read repository
+  packages: write     # Can push Docker images
+  id-token: write     # Can authenticate with cloud
 
 jobs:
   # Stage 1: Configuration Validation (ALWAYS RUNS FIRST)
@@ -127,33 +129,33 @@ jobs:
 
       # Step 2: Uncomment to add dependency vulnerability scanning
       #👇 Uncomment this section in Step 2: Dependency Scanning
-      # - name: Install Security Tools
-      #   run: |
-      #     source venv/bin/activate
-      #     pip install --upgrade pip-audit
+      - name: Install Security Tools
+        run: |
+          source venv/bin/activate
+          pip install --upgrade pip-audit
 
-      # - name: Scan for Vulnerable Dependencies
-      #   run: |
-      #     source venv/bin/activate
-      #     echo "🔍 Security scan with latest tools..."
-      #     pip --version
+      - name: Scan for Vulnerable Dependencies
+        run: |
+          source venv/bin/activate
+          echo "🔍 Security scan with latest tools..."
+          pip --version
           
-      #     # Smart vulnerability handling - only fail on HIGH/CRITICAL
-      #     pip-audit --severity medium --output-format json --output security-report.json || {
-      #       echo "⚠️ Vulnerabilities found - checking severity..."
-      #       # Continue build but flag for review
-      #       echo "security_issues=true" >> $GITHUB_ENV
-      #     }
+          # Smart vulnerability handling - only fail on HIGH/CRITICAL
+          pip-audit --severity medium --output-format json --output security-report.json || {
+            echo "⚠️ Vulnerabilities found - checking severity..."
+            # Continue build but flag for review
+            echo "security_issues=true" >> $GITHUB_ENV
+          }
           
-      #     echo "✅ Security scan completed"
+          echo "✅ Security scan completed"
 
-      # - name: Upload Security Report
-      #   uses: actions/upload-artifact@v4
-      #   if: always()
-      #   with:
-      #     name: security-report-${{ github.run_number }}
-      #     path: security-report.json
-      #     retention-days: 30
+      - name: Upload Security Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-report-${{ github.run_number }}
+          path: security-report.json
+          retention-days: 30
 
       - name: Build Application (Development Environment)
         run: |
@@ -198,23 +200,23 @@ jobs:
 
       # Step 3: Uncomment to add SBOM generation
       # 👇 Uncomment this section in Step 3: Software Bill of Materials
-      # - name: Generate Software Bill of Materials (SBOM)
-      #   run: |
-      #     curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
-      #     syft . -o cyclonedx-json > sbom.json
-      #     echo "📋 SBOM generated with $(jq '.components | length' sbom.json) components"
+      - name: Generate Software Bill of Materials (SBOM)
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+          syft . -o cyclonedx-json > sbom.json
+          echo "📋 SBOM generated with $(jq '.components | length' sbom.json) components"
 
-      # - name: Upload SBOM as Artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: software-bill-of-materials
-      #     path: sbom.json
+      - name: Upload SBOM as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: software-bill-of-materials
+          path: sbom.json
 
-      # - name: Scan SBOM for Vulnerabilities
-      #   run: |
-      #     curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
-      #     grype sbom.json --fail-on high
-      #     echo "🔍 SBOM vulnerability scan completed"
+      - name: Scan SBOM for Vulnerabilities
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+          grype sbom.json --fail-on high
+          echo "🔍 SBOM vulnerability scan completed"
 
       - name: Get version from Git commit
         id: get_version
@@ -226,19 +228,19 @@ jobs:
       # 🚨 SECURITY ISSUE: Uncomment ONLY ONE of the following login methods:
 
       # BAD: Hardcoded credentials (Step 1 - shows the problem)
-      - name: Log in to Registry (INSECURE - Step 1)
-        run: |
-          # 🚨 SECURITY ISSUE: Hardcoded password!
-          echo "password123" | docker login ghcr.io -u admin --password-stdin
-          echo "⚠️  Using hardcoded credentials - SECURITY RISK!"
+      # - name: Log in to Registry (INSECURE - Step 1)
+      #   run: |
+      #     # 🚨 SECURITY ISSUE: Hardcoded password!
+      #     echo "password123" | docker login ghcr.io -u admin --password-stdin
+      #     echo "⚠️  Using hardcoded credentials - SECURITY RISK!"
 
       # GOOD: Uncomment for Step 4: Secure Authentication
       # 👇 Uncomment this section in Step 4 and comment out the above
       # CAPSTONE: Only use GitHub Container Registry (GHCR) for image storage and deployment in this project.
-      # - name: Log in to GitHub Container Registry
-      #   run: |
-      #     echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
-      #     echo "✅ Using secure GitHub token authentication"
+      - name: Log in to GitHub Container Registry
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+          echo "✅ Using secure GitHub token authentication"
 
       - name: Build and tag Docker image
         run: |
@@ -254,19 +256,19 @@ jobs:
 
       # Step 5: Uncomment to add container vulnerability scanning
       # 👇 Uncomment this section in Step 5: Container Security
-      # - name: Scan Container for Vulnerabilities
-      #   run: |
-      #     echo "🔍 Scanning container for vulnerabilities..."
+      - name: Scan Container for Vulnerabilities
+        run: |
+          echo "🔍 Scanning container for vulnerabilities..."
           
-      #     # Option A: Scan everything (may find system vulnerabilities)
-      #     echo "📊 Full vulnerability report:"
+          # Option A: Scan everything (may find system vulnerabilities)
+          echo "📊 Full vulnerability report:"
           
-      #     grype ghcr.io/${{ github.repository }}/kodekloud-records:${{ env.VERSION }} \
-      #       --fail-on high \
-      #       --only-fixed 
+          grype ghcr.io/${{ github.repository }}/kodekloud-records:${{ env.VERSION }} \
+            --fail-on high \
+            --only-fixed 
           
-      #     echo "✅ Container vulnerability scan completed"
-      #     echo "💡 Note: In production, configure scans based on your risk tolerance"
+          echo "✅ Container vulnerability scan completed"
+          echo "💡 Note: In production, configure scans based on your risk tolerance"
 
   # Stage 4: Deploy to Staging (AUTOMATIC after build succeeds)
   deploy-staging:
