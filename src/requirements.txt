@@ -12,7 +12,7 @@ opentelemetry-exporter-otlp==1.21.0
 opentelemetry-instrumentation-fastapi==0.42b0
 opentelemetry-instrumentation-sqlalchemy==0.42b0
 opentelemetry-instrumentation-celery==0.58b0
-setuptools==78.1.1
+setuptools==80.9.0
 
 # Additional testing dependencies for demos
 pytest==7.4.3
