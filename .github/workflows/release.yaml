@@ -29,7 +29,7 @@ on:
 
 # Step 4: Apply least privilege permissions  
 # 👇 Uncomment in Step 4: Secure Authentication
-# permissions:
+permissions:
   contents: read      # Can read repository
   packages: write     # Can push Docker images
   id-token: write     # Can authenticate with cloud
