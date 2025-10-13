@@ -1,0 +1,149 @@
+name: Security Monitoring & Dependency Updates
+
+on:
+  schedule:
+    - cron: '0 2 * * 1'  # Weekly on Monday at 2 AM UTC
+  workflow_dispatch:
+    inputs:
+      force_update:
+        description: 'Force update all dependencies'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies and security tools
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          # Always use latest pip
+          python -m pip install --upgrade pip
+          pip install -r src/requirements.txt
+          pip install pip-audit safety
+
+      - name: Comprehensive Security Scan
+        run: |
+          source venv/bin/activate
+          
+          echo "🔍 Running comprehensive security scan..."
+          echo "Pip version: $(pip --version)"
+          
+          # Generate detailed security reports
+          echo "📊 Generating pip-audit report..."
+          pip-audit --output-format json --output pip-audit-report.json || true
+          
+          echo "📊 Generating safety report..."
+          safety check --json --output safety-report.json || true
+          
+          # Check for any HIGH or CRITICAL vulnerabilities
+          if pip-audit --severity high --quiet; then
+            echo "✅ No high-severity vulnerabilities found"
+            echo "SECURITY_STATUS=clean" >> $GITHUB_ENV
+          else
+            echo "⚠️ High-severity vulnerabilities detected"
+            echo "SECURITY_STATUS=vulnerable" >> $GITHUB_ENV
+          fi
+
+      - name: Upload Security Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports-${{ github.run_number }}
+          path: |
+            pip-audit-report.json
+            safety-report.json
+          retention-days: 30
+
+      - name: Create Security Issue (if vulnerabilities found)
+        if: env.SECURITY_STATUS == 'vulnerable'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // Read the audit report
+            let auditData = {};
+            try {
+              auditData = JSON.parse(fs.readFileSync('pip-audit-report.json', 'utf8'));
+            } catch (e) {
+              console.log('Could not read audit report');
+            }
+            
+            const vulnerabilityCount = auditData.vulnerabilities ? auditData.vulnerabilities.length : 0;
+            
+            const issueBody = `
+            ## 🚨 Security Vulnerabilities Detected
+            
+            **Scan Date:** ${new Date().toISOString().split('T')[0]}
+            **Vulnerabilities Found:** ${vulnerabilityCount}
+            
+            ### Summary
+            Our automated security scan has detected vulnerabilities in the project dependencies.
+            
+            ### Next Steps
+            1. Review the attached security reports in the workflow artifacts
+            2. Update affected dependencies to secure versions
+            3. Test the application after updates
+            4. Close this issue once vulnerabilities are resolved
+            
+            ### Artifacts
+            - Download security reports from: [Workflow Run #${context.runNumber}](${context.payload.repository.html_url}/actions/runs/${context.runId})
+            
+            ### Automation
+            This issue was automatically created by the Security Monitoring workflow.
+            `;
+            
+            // Check if there's already an open security issue
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'security,automated'
+            });
+            
+            if (issues.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `🚨 Security Vulnerabilities Detected - ${new Date().toISOString().split('T')[0]}`,
+                body: issueBody,
+                labels: ['security', 'automated', 'high-priority']
+              });
+            } else {
+              console.log('Security issue already exists, updating...');
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues[0].number,
+                body: `🔄 **Updated Security Scan Results**\n\n${issueBody}`
+              });
+            }
+
+      - name: Security Summary
+        run: |
+          echo "🛡️ Security Monitoring Summary"
+          echo "=============================="
+          echo "Status: ${{ env.SECURITY_STATUS }}"
+          echo "Scan completed at: $(date)"
+          
+          if [ "${{ env.SECURITY_STATUS }}" = "clean" ]; then
+            echo "✅ All dependencies are secure"
+          else
+            echo "⚠️ Security vulnerabilities detected - issue created"
+          fi
