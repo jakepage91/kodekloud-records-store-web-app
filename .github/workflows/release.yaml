@@ -1,9 +1,10 @@
 name: Progressive Config Management & Secure Release Pipeline
 
 on:
-  # push:
-    # branches:
-    #   - main
+  push:
+    branches:
+      - main
+      - develop-test
   pull_request:
     types: [closed]
     branches:
