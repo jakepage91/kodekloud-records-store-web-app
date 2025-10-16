@@ -2,19 +2,19 @@ groups:
   - name: SLI_Latency
     rules:
       - record: sli:latency:p90
-        expr: histogram_quantile(0.90, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, endpoint))
+        expr: histogram_quantile(0.90, sum(rate(kodekloud_http_request_duration_seconds_bucket[5m])) by (le, route))
         labels:
           sli: latency
           quantile: p90
       
       - record: sli:latency:p95
-        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, endpoint))
+        expr: histogram_quantile(0.95, sum(rate(kodekloud_http_request_duration_seconds_bucket[5m])) by (le, route))
         labels:
           sli: latency
           quantile: p95
       
       - record: sli:latency:p99
-        expr: histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, endpoint))
+        expr: histogram_quantile(0.99, sum(rate(kodekloud_http_request_duration_seconds_bucket[5m])) by (le, route))
         labels:
           sli: latency
           quantile: p99
@@ -42,13 +42,13 @@ groups:
   - name: SLI_ErrorRate
     rules:
       - record: sli:error_rate:ratio_5m
-        expr: sum(rate(http_request_errors_total[5m])) / sum(rate(http_requests_total[5m]))
+        expr: sum(rate(kodekloud_http_errors_total[5m])) / sum(rate(kodekloud_http_requests_total[5m]))
         labels:
           sli: error_rate
           window: 5m
       
       - record: sli:error_rate:ratio_1h
-        expr: sum(rate(http_request_errors_total[1h])) / sum(rate(http_requests_total[1h]))
+        expr: sum(rate(kodekloud_http_errors_total[1h])) / sum(rate(kodekloud_http_requests_total[1h]))
         labels:
           sli: error_rate
           window: 1h
@@ -56,7 +56,7 @@ groups:
   - name: SLI_Throughput
     rules:
       - record: sli:throughput:requests_per_second
-        expr: sum(rate(http_requests_total[5m])) by (endpoint)
+        expr: sum(rate(kodekloud_http_requests_total[5m])) by (route)
         labels:
           sli: throughput
           window: 5m
