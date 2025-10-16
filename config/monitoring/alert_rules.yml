@@ -20,7 +20,7 @@ groups:
       summary: "Critical demo alert for testing"
       description: "This critical alert demonstrates the alerting workflow."
   - alert: HighErrorRate
-    expr: sum(rate(http_requests_total{status_code=~"4xx|5xx"}[5m])) / sum(rate(http_requests_total[5m])) > 0.05
+    expr: sum(rate(kodekloud_http_requests_total{status_code=~"4xx|5xx"}[5m])) / sum(rate(kodekloud_http_requests_total[5m])) > 0.05
     for: 2m
     labels:
       severity: critical
@@ -29,7 +29,7 @@ groups:
       description: "The error rate is above 5% for the last 5 minutes."
 
   - alert: LongRequestDuration
-    expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 1
+    expr: histogram_quantile(0.95, sum(rate(kodekloud_http_request_duration_seconds_bucket[5m])) by (le)) > 1
     for: 5m
     labels:
       severity: warning
@@ -38,7 +38,7 @@ groups:
       description: "95th percentile request duration is above 1 second for the last 5 minutes."
     
   - alert: HighUserLatency
-    expr: probe_duration_seconds{job="blackbox"} > 2
+    expr: probe_duration_seconds{job="blackbox-health"} > 2
     for: 5m
     labels:
       severity: warning
@@ -50,12 +50,12 @@ groups:
 - name: KodeKloud_Records_Checkout_SLOs (SLO-Based Alerts)
   rules:
   - record: checkout:request_failures:ratio_5m
-    expr: sum(rate(http_requests_total{endpoint="/checkout", status_code=~"4xx|5xx"}[5m])) / sum(rate(http_requests_total{endpoint="/checkout"}[5m]))
+    expr: sum(rate(kodekloud_http_requests_total{route="/checkout", status_code=~"4xx|5xx"}[5m])) / sum(rate(kodekloud_http_requests_total{route="/checkout"}[5m]))
     labels:
       sli: availability
 
   - record: checkout:request_latency:p95_5m
-    expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{endpoint="/checkout"}[5m])) by (le))
+    expr: histogram_quantile(0.95, sum(rate(kodekloud_http_request_duration_seconds_bucket{route="/checkout"}[5m])) by (le))
     labels:
       sli: latency
 
@@ -107,6 +107,7 @@ groups:
       description: "Checkout has a {{ $value | humanizePercentage }} error rate over the last 3h, which is 5x our SLO target. This will consume 50% of monthly error budget in ~9 days if it continues."
       dashboard: "https://grafana.kodekloud-records.com/d/checkout"
 
+          
   # CAPSTONE: SLO for [your chosen SLI] >= [your target]%
   # - alert: [YourSLI]SLOViolation
   #   expr: |
