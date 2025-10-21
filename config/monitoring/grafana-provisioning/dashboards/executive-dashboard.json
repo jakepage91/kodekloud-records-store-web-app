@@ -313,7 +313,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "histogram_quantile(0.95, rate(kodekloud_http_request_duration_seconds_bucket[5m])) * 1000",
+          "expr": "histogram_quantile(0.95, sum(rate(kodekloud_http_request_duration_seconds_bucket[5m])) by (le)) * 1000",
           "interval": "",
           "legendFormat": "Response Time",
           "refId": "A"
