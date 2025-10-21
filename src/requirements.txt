@@ -7,7 +7,7 @@ prometheus-client==0.23.1
 celery==5.3.4
 pika==1.3.2
 opentelemetry-api==1.21.0
-opentelemetry-sdk==1.21.0
+opentelemetry-sdk==1.38.0
 opentelemetry-exporter-otlp==1.21.0
 opentelemetry-instrumentation-fastapi==0.59b0
 opentelemetry-instrumentation-sqlalchemy==0.42b0
