@@ -161,7 +161,7 @@ cd kodekloud-records-store-web-app
 ./deploy/environments/setup-local-env.sh
 
 # Verify the environment file was created
-cat .env.dev
+cat deploy/environments/.env.dev
 ```
 
 The setup script creates a `.env.dev` file with these defaults:
@@ -172,7 +172,7 @@ The setup script creates a `.env.dev` file with these defaults:
 #### 3. Start the Complete Stack
 ```bash
 # Start all services (application + observability)
-docker-compose --env-file .env.dev up -d
+docker-compose --env-file cat deploy/environments/.env.dev up -d
 
 # Check all services are running
 docker-compose ps
