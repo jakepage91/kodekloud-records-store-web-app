@@ -172,7 +172,7 @@ The setup script creates a `.env.dev` file with these defaults:
 #### 3. Start the Complete Stack
 ```bash
 # Start all services (application + observability)
-docker-compose --env-file cat deploy/environments/.env.dev up -d
+docker-compose --env-file deploy/environments/.env.dev up -d
 
 # Check all services are running
 docker-compose ps
