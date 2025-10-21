@@ -20,7 +20,7 @@
             "legendFormat": "Checkout Success Rate %"
           },
           {
-            "expr": "histogram_quantile(0.95, kodekloud_http_request_duration_seconds_bucket{route=\"/checkout\"})",
+            "expr": "histogram_quantile(0.95, sum(rate(kodekloud_http_request_duration_seconds_bucket{route=\"/checkout\"}[5m])) by (le))",
             "legendFormat": "P95 Latency (s)"
           },
           {
@@ -82,15 +82,15 @@
         "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
         "targets": [
           {
-            "expr": "histogram_quantile(0.50, kodekloud_http_request_duration_seconds_bucket{route=\"/checkout\"})",
+            "expr": "histogram_quantile(0.50, sum(rate(kodekloud_http_request_duration_seconds_bucket{route=\"/checkout\"}[5m])) by (le))",
             "legendFormat": "P50 Checkout API"
           },
           {
-            "expr": "histogram_quantile(0.95, kodekloud_http_request_duration_seconds_bucket{route=\"/checkout\"})",
+            "expr": "histogram_quantile(0.95, sum(rate(kodekloud_http_request_duration_seconds_bucket{route=\"/checkout\"}[5m])) by (le))",
             "legendFormat": "P95 Checkout API"
           },
           {
-            "expr": "histogram_quantile(0.95, kodekloud_http_request_duration_seconds_bucket{route=\"/orders\"})",
+            "expr": "histogram_quantile(0.95, sum(rate(kodekloud_http_request_duration_seconds_bucket{route=\"/orders\"}[5m])) by (le))",
             "legendFormat": "P95 Order Processing"
           }
         ],
@@ -144,11 +144,11 @@
             "legendFormat": "API Service"
           },
           {
-            "expr": "up{job=\"prometheus\"}",
+            "expr": "up{job=\"postgres\"}",
             "legendFormat": "Database"
           },
           {
-            "expr": "up{job=\"pushgateway\"}",
+            "expr": "up{job=\"rabbitmq\"}",
             "legendFormat": "Message Queue"
           }
         ],
