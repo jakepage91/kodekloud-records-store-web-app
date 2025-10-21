@@ -72,7 +72,7 @@ jobs:
 
       - name: Create Security Issue (if vulnerabilities found)
         if: env.SECURITY_STATUS == 'vulnerable'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const fs = require('fs');
