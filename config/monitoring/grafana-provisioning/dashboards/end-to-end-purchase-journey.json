@@ -12,16 +12,24 @@
         "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0},
         "targets": [
           {
-            "expr": "rate(kodekloud_http_requests_total{job=\"kodekloud-record-store-api\",method=\"POST\",route=\"/checkout\"}[5m])",
-            "legendFormat": "Checkout Requests/sec"
+            "expr": "sum(kodekloud_http_requests_total{route=\"/checkout\"})",
+            "legendFormat": "Total Checkout Requests"
           },
           {
-            "expr": "rate(kodekloud_http_requests_total{job=\"kodekloud-record-store-api\",method=\"POST\",route=\"/checkout\",status_code=~\"2..\"}[5m]) / rate(kodekloud_http_requests_total{job=\"kodekloud-record-store-api\",method=\"POST\",route=\"/checkout\"}[5m]) * 100",
-                          "legendFormat": "Success Rate %"
-            },
-            {
-              "expr": "histogram_quantile(0.95, rate(kodekloud_http_request_duration_seconds_bucket{job=\"kodekloud-record-store-api\",route=\"/checkout\"}[5m]))",
-              "legendFormat": "P95 Latency (s)"
+            "expr": "sum(kodekloud_http_requests_total{route=\"/checkout\",status_code=~\"2..\"}) / sum(kodekloud_http_requests_total{route=\"/checkout\"}) * 100",
+            "legendFormat": "Checkout Success Rate %"
+          },
+          {
+            "expr": "histogram_quantile(0.95, kodekloud_http_request_duration_seconds_bucket{route=\"/checkout\"})",
+            "legendFormat": "P95 Latency (s)"
+          },
+          {
+            "expr": "sum(kodekloud_http_requests_total{route=\"/products\"})",
+            "legendFormat": "Product Views"
+          },
+          {
+            "expr": "sum(kodekloud_http_requests_total{route=\"/orders\"})",
+            "legendFormat": "Orders Processed"
           }
         ],
         "fieldConfig": {
@@ -45,19 +53,19 @@
         "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
         "targets": [
           {
-            "expr": "rate(kodekloud_http_requests_total{job=\"kodekloud-record-store-api\",route=\"/products\"}[5m])",
+            "expr": "sum(kodekloud_http_requests_total{route=\"/products\"})",
             "legendFormat": "1. Product Browsing"
           },
           {
-            "expr": "rate(kodekloud_http_requests_total{job=\"kodekloud-record-store-api\",route=\"/checkout\"}[5m])",
+            "expr": "sum(kodekloud_http_requests_total{route=\"/checkout\"})",
             "legendFormat": "2. Checkout Initiation"
           },
           {
-            "expr": "rate(celery_tasks_total{task=\"process_order\"}[5m])",
+            "expr": "sum(kodekloud_http_requests_total{route=\"/orders\"})",
             "legendFormat": "3. Order Processing"
           },
           {
-            "expr": "rate(celery_tasks_total{task=\"send_order_confirmation\"}[5m])",
+            "expr": "sum(kodekloud_http_requests_total{route=\"/\"})",
             "legendFormat": "4. Email Confirmation"
           }
         ],
@@ -74,15 +82,15 @@
         "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
         "targets": [
           {
-            "expr": "histogram_quantile(0.50, rate(kodekloud_http_request_duration_seconds_bucket{job=\"kodekloud-record-store-api\",route=\"/checkout\"}[5m]))",
+            "expr": "histogram_quantile(0.50, kodekloud_http_request_duration_seconds_bucket{route=\"/checkout\"})",
             "legendFormat": "P50 Checkout API"
           },
           {
-            "expr": "histogram_quantile(0.95, rate(kodekloud_http_request_duration_seconds_bucket{job=\"kodekloud-record-store-api\",route=\"/checkout\"}[5m]))",
+            "expr": "histogram_quantile(0.95, kodekloud_http_request_duration_seconds_bucket{route=\"/checkout\"})",
             "legendFormat": "P95 Checkout API"
           },
           {
-            "expr": "histogram_quantile(0.95, rate(celery_task_duration_seconds_bucket{task=\"process_order\"}[5m]))",
+            "expr": "histogram_quantile(0.95, kodekloud_http_request_duration_seconds_bucket{route=\"/orders\"})",
             "legendFormat": "P95 Order Processing"
           }
         ],
@@ -103,7 +111,7 @@
         "targets": [
           {
             "queryType": "search",
-            "service": "kodekloud-record-store-api",
+            "service": "kodekloud-record-store-api-dev",
             "operation": "checkout_order",
             "limit": 20
           }
@@ -136,11 +144,11 @@
             "legendFormat": "API Service"
           },
           {
-            "expr": "up{job=\"postgres\"}",
+            "expr": "up{job=\"prometheus\"}",
             "legendFormat": "Database"
           },
           {
-            "expr": "up{job=\"rabbitmq\"}",
+            "expr": "up{job=\"pushgateway\"}",
             "legendFormat": "Message Queue"
           }
         ],
@@ -159,42 +167,6 @@
             ]
           }
         }
-      },
-      {
-        "id": 6,
-        "title": "💾 Database Query Performance",
-        "type": "graph",
-        "gridPos": {"h": 6, "w": 8, "x": 8, "y": 24},
-        "targets": [
-          {
-            "expr": "rate(postgres_queries_total[5m])",
-            "legendFormat": "Queries/sec"
-          },
-          {
-            "expr": "avg(postgres_query_duration_seconds)",
-            "legendFormat": "Avg Query Time"
-          }
-        ]
-      },
-      {
-        "id": 7,
-        "title": "📬 Background Job Processing",
-        "type": "graph",
-        "gridPos": {"h": 6, "w": 8, "x": 16, "y": 24},
-        "targets": [
-          {
-            "expr": "celery_tasks_total{state=\"SUCCESS\"}",
-            "legendFormat": "Successful Jobs"
-          },
-          {
-            "expr": "celery_tasks_total{state=\"FAILURE\"}",
-            "legendFormat": "Failed Jobs"
-          },
-          {
-            "expr": "celery_workers_active",
-            "legendFormat": "Active Workers"
-          }
-        ]
       },
       {
         "id": 8,
@@ -223,50 +195,10 @@
         }
       },
       {
-        "id": 9,
-        "title": "⚠️ Error Rate by Journey Stage",
-        "type": "graph",
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 38},
-        "targets": [
-          {
-            "expr": "rate(kodekloud_http_requests_total{job=\"kodekloud-record-store-api\",route=\"/products\",status_code=~\"5..\"}[5m]) / rate(kodekloud_http_requests_total{job=\"kodekloud-record-store-api\",route=\"/products\"}[5m]) * 100",
-            "legendFormat": "Product Browse Errors %"
-          },
-          {
-            "expr": "rate(kodekloud_http_requests_total{job=\"kodekloud-record-store-api\",route=\"/checkout\",status_code=~\"[45]..\"}[5m]) / rate(kodekloud_http_requests_total{job=\"kodekloud-record-store-api\",route=\"/checkout\"}[5m]) * 100",
-            "legendFormat": "Checkout Errors %"
-          },
-          {
-            "expr": "rate(celery_tasks_total{task=\"process_order\",state=\"FAILURE\"}[5m]) / rate(celery_tasks_total{task=\"process_order\"}[5m]) * 100",
-            "legendFormat": "Order Processing Errors %"
-          }
-        ],
-        "yAxes": [
-          {"label": "Error Rate %", "show": true, "max": 100},
-          {"show": false}
-        ],
-        "alert": {
-          "conditions": [
-            {
-              "evaluator": {"params": [5], "type": "gt"},
-              "operator": {"type": "and"},
-              "query": {"params": ["A", "5m", "now"]},
-              "reducer": {"params": [], "type": "avg"},
-              "type": "query"
-            }
-          ],
-          "frequency": "10s",
-          "handler": 1,
-          "name": "High Error Rate Alert",
-          "noDataState": "no_data",
-          "executionErrorState": "alerting"
-        }
-      },
-      {
         "id": 10,
         "title": "🎯 Business Metrics",
         "type": "stat",
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 38},
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 22},
         "targets": [
           {
             "expr": "increase(kodekloud_http_requests_total{job=\"kodekloud-record-store-api\",route=\"/checkout\",status_code=\"200\"}[1h])",

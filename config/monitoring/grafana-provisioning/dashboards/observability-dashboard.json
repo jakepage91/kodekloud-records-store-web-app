@@ -139,7 +139,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum(rate(http_request_errors_total[5m])) by (route)",
+          "expr": "sum(rate(kodekloud_http_errors_total[5m])) by (route)",
           "interval": "",
           "legendFormat": "{{endpoint}} errors",
           "refId": "A"

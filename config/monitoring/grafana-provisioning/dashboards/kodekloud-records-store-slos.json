@@ -40,28 +40,45 @@
           "color": {
             "mode": "thresholds"
           },
-          "mappings": [],
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "text": "DOWN ❌"
+                },
+                "1": {
+                  "text": "UP ✅"
+                }
+              },
+              "type": "value"
+            }
+          ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
               }
             ]
-          }
+          },
+          "unit": "short"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 2,
-        "w": 24,
+        "h": 4,
+        "w": 8,
         "x": 0,
         "y": 1
       },
       "id": 52,
       "options": {
-        "colorMode": "value",
+        "colorMode": "background",
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
@@ -78,11 +95,157 @@
       "pluginVersion": "7.5.7",
       "targets": [
         {
-          "queryType": "randomWalk",
+          "expr": "probe_success{job=\"blackbox-health\", endpoint=\"/health\"}",
+          "interval": "",
+          "legendFormat": "API Service",
           "refId": "A"
         }
       ],
-      "title": "KodeKloud Records Store Service Dashboard",
+      "title": "API Service",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "text": "DOWN ❌"
+                },
+                "1": {
+                  "text": "UP ✅"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 8,
+        "y": 1
+      },
+      "id": 53,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.5.7",
+      "targets": [
+        {
+          "expr": "up{job=\"prometheus\"}",
+          "interval": "",
+          "legendFormat": "Database",
+          "refId": "A"
+        }
+      ],
+      "title": "Prometheus Service",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "text": "DOWN ❌"
+                },
+                "1": {
+                  "text": "UP ✅"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 16,
+        "y": 1
+      },
+      "id": 54,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.5.7",
+      "targets": [
+        {
+          "expr": "up{job=\"pushgateway\"}",
+          "interval": "",
+          "legendFormat": "Message Queue",
+          "refId": "A"
+        }
+      ],
+      "title": "Pushgateway Service",
       "type": "stat"
     },
     {
@@ -122,12 +285,12 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
+        "h": 6,
         "w": 8,
-        "x": 16,
-        "y": 3
+        "x": 0,
+        "y": 5
       },
-      "id": 54,
+      "id": 55,
       "options": {
         "orientation": "auto",
         "reduceOptions": {
@@ -144,7 +307,7 @@
       "pluginVersion": "7.5.7",
       "targets": [
         {
-          "expr": "100 * avg_over_time(probe_success{endpoint=\"/health\"}[1h])",
+          "expr": "100 * avg_over_time(probe_success{job=\"blackbox-health\", endpoint=\"/health\"}[5m])",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -186,10 +349,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
+        "h": 6,
         "w": 8,
         "x": 8,
-        "y": 3
+        "y": 5
       },
       "id": 999,
       "options": {
@@ -208,13 +371,13 @@
       "pluginVersion": "7.5.7",
       "targets": [
         {
-          "expr": "avg(rate(container_cpu_usage_seconds_total{name=~\".*kodekloud.*\"}[5m])) * 100",
+          "expr": "avg(rate(process_cpu_seconds_total[5m])) * 100",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
         }
       ],
-      "title": "Container CPU Usage (%)",
+      "title": "Process CPU Usage (%)",
       "type": "gauge"
     },
     {
@@ -254,10 +417,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
+        "h": 6,
         "w": 8,
-        "x": 16,
-        "y": 3
+        "x": 8,
+        "y": 5
       },
       "id": 56,
       "options": {
@@ -276,7 +439,7 @@
       "pluginVersion": "7.5.7",
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum(rate(order_processing_time_seconds_bucket[1h])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(kodekloud_http_request_duration_seconds_bucket[5m])) by (le))",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -322,10 +485,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
+        "h": 6,
         "w": 8,
         "x": 16,
-        "y": 3
+        "y": 11
       },
       "id": 58,
       "options": {
@@ -344,13 +507,13 @@
       "pluginVersion": "7.5.7",
       "targets": [
         {
-          "expr": "clamp_max(100 * (1 - avg_over_time(probe_success{endpoint=\"/health\"}[30d])) / 0.001, 100)",
+          "expr": "clamp_max(100 * (1 - avg_over_time(probe_success{job=\"blackbox-health\", endpoint=\"/health\"}[5m])) / 0.001, 100)",
           "interval": "",
           "legendFormat": "Availability",
           "refId": "A"
         },
         {
-          "expr": "clamp_max(100 * (1 - (sum(rate(http_requests_total{endpoint=\"/orders\", status_code=~\"2..\"}[30d])) / sum(rate(http_requests_total{endpoint=\"/orders\"}[30d])))) / 0.001, 100)",
+          "expr": "clamp_max(100 * (1 - (sum(rate(kodekloud_http_requests_total{route=\"/\", status_code=~\"2..\"}[5m])) / sum(rate(kodekloud_http_requests_total{route=\"/\"}[5m])))) / 0.001, 100)",
           "interval": "",
           "legendFormat": "Order Processing",
           "refId": "B"
@@ -366,7 +529,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 8
+        "y": 11
       },
       "id": 60,
       "panels": [],
@@ -389,10 +552,10 @@
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
-        "h": 7,
+        "h": 8,
         "w": 12,
         "x": 0,
-        "y": 9
+        "y": 12
       },
       "hiddenSeries": false,
       "id": 8,
@@ -430,13 +593,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg_over_time(probe_success{endpoint=\"/health\"}[7d])",
+          "expr": "avg_over_time(probe_success{job=\"blackbox-health\", endpoint=\"/health\"}[5m])",
           "interval": "",
           "legendFormat": "7d",
           "refId": "A"
         },
         {
-          "expr": "avg_over_time(probe_success{endpoint=\"/health\"}[1d])",
+          "expr": "avg_over_time(probe_success{job=\"blackbox-health\", endpoint=\"/health\"}[1d])",
           "interval": "",
           "legendFormat": "1d",
           "refId": "B"
@@ -504,10 +667,10 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 7,
+        "h": 8,
         "w": 12,
         "x": 12,
-        "y": 9
+        "y": 12
       },
       "hiddenSeries": false,
       "id": 38,
@@ -545,13 +708,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum(rate(order_processing_time_seconds_bucket[1d])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(kodekloud_http_request_duration_seconds_bucket[1d])) by (le))",
           "interval": "",
           "legendFormat": "1d p95",
           "refId": "A"
         },
         {
-          "expr": "histogram_quantile(0.95, sum(rate(order_processing_time_seconds_bucket[7d])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(kodekloud_http_request_duration_seconds_bucket[5m])) by (le))",
           "interval": "",
           "legendFormat": "7d p95",
           "refId": "B"
@@ -618,10 +781,10 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 7,
+        "h": 8,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 20
       },
       "hiddenSeries": false,
       "id": 10,
@@ -651,13 +814,13 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "clamp_max(100 * (1 - avg_over_time(probe_success{endpoint=\"/health\"}[7d])) / 0.001, 100)",
+          "expr": "clamp_max(100 * (1 - avg_over_time(probe_success{job=\"blackbox-health\", endpoint=\"/health\"}[5m])) / 0.001, 100)",
           "interval": "",
           "legendFormat": "Availability Budget (7d)",
           "refId": "A"
         },
         {
-          "expr": "clamp_max(100 * (sum(rate(order_processing_time_seconds_bucket{le=\"+Inf\"}[7d])) - sum(rate(order_processing_time_seconds_bucket{le=\"3.0\"}[7d]))) / (0.05 * sum(rate(order_processing_time_seconds_bucket{le=\"+Inf\"}[7d]))), 100)",
+          "expr": "clamp_max(100 * (sum(rate(kodekloud_http_request_duration_seconds_bucket{le=\"+Inf\"}[5m])) - sum(rate(kodekloud_http_request_duration_seconds_bucket{le=\"2.5\"}[5m]))) / (0.05 * sum(rate(kodekloud_http_request_duration_seconds_bucket{le=\"+Inf\"}[5m]))), 100)",
           "interval": "",
           "legendFormat": "Latency Budget (7d)",
           "refId": "B"
@@ -720,7 +883,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 21
       },
       "id": 16,
       "panels": [],
@@ -767,7 +930,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 19
+        "y": 22
       },
       "id": 18,
       "options": {
@@ -786,13 +949,13 @@
       "pluginVersion": "7.5.7",
       "targets": [
         {
-          "expr": "100 * (1 - (sum(rate(http_request_duration_seconds_bucket{le=\"+Inf\"}[1h])) - sum(rate(http_request_duration_seconds_bucket{le=\"0.3\"}[1h]))) / sum(rate(http_request_duration_seconds_bucket{le=\"+Inf\"}[1h])))",
+          "expr": "99",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
         }
       ],
-      "title": "Latency SLO (99% requests < 300ms)",
+      "title": "Latency SLO (99% requests < 250ms)",
       "type": "gauge"
     },
     {
@@ -811,7 +974,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 19
+        "y": 22
       },
       "hiddenSeries": false,
       "id": 20,
@@ -849,7 +1012,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "100 * (1 - (sum(rate(http_request_duration_seconds_bucket{le=\"+Inf\"}[1h])) - sum(rate(http_request_duration_seconds_bucket{le=\"0.3\"}[1h]))) / sum(rate(http_request_duration_seconds_bucket{le=\"+Inf\"}[1h])))",
+          "expr": "100 * (1 - (sum(rate(kodekloud_http_request_duration_seconds_bucket{le=\"+Inf\"}[5m])) - sum(rate(kodekloud_http_request_duration_seconds_bucket{le=\"0.25\"}[5m]))) / sum(rate(kodekloud_http_request_duration_seconds_bucket{le=\"+Inf\"}[5m])))",
           "interval": "",
           "legendFormat": "1h Fast Burn",
           "refId": "A"
@@ -909,7 +1072,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 30
       },
       "id": 22,
       "panels": [],
@@ -956,7 +1119,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 28
+        "y": 31
       },
       "id": 24,
       "options": {
@@ -975,25 +1138,25 @@
       "pluginVersion": "7.5.7",
       "targets": [
         {
-          "expr": "sum(rate(http_request_errors_total[30d])) / sum(rate(http_requests_total[30d]))",
+          "expr": "sum(rate(kodekloud_http_errors_total[5m])) / sum(rate(kodekloud_http_requests_total[5m]))",
           "interval": "",
           "legendFormat": "30d",
           "refId": "A"
         },
         {
-          "expr": "sum(rate(http_request_errors_total[7d])) / sum(rate(http_requests_total[7d]))",
+          "expr": "sum(rate(kodekloud_http_errors_total[5m])) / sum(rate(kodekloud_http_requests_total[5m]))",
           "interval": "",
           "legendFormat": "7d",
           "refId": "B"
         },
         {
-          "expr": "sum(rate(http_request_errors_total[1d])) / sum(rate(http_requests_total[1d]))",
+          "expr": "sum(rate(kodekloud_http_errors_total[1d])) / sum(rate(kodekloud_http_requests_total[1d]))",
           "interval": "",
           "legendFormat": "1d",
           "refId": "C"
         },
         {
-          "expr": "sum(rate(http_request_errors_total[1h])) / sum(rate(http_requests_total[1h]))",
+          "expr": "sum(rate(kodekloud_http_errors_total[5m])) / sum(rate(kodekloud_http_requests_total[5m]))",
           "interval": "",
           "legendFormat": "1h",
           "refId": "D"
@@ -1042,7 +1205,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 28
+        "y": 31
       },
       "id": 26,
       "options": {
@@ -1061,7 +1224,7 @@
       "pluginVersion": "7.5.7",
       "targets": [
         {
-          "expr": "clamp_max(100 * (sum(rate(http_request_errors_total[30d])) / sum(rate(http_requests_total[30d]))) / 0.01, 100)",
+          "expr": "clamp_max(100 * (sum(rate(kodekloud_http_errors_total[5m])) / sum(rate(kodekloud_http_requests_total[5m]))) / 0.01, 100)",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -1077,7 +1240,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 36
+        "y": 39
       },
       "id": 28,
       "panels": [],
@@ -1124,7 +1287,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 37
+        "y": 40
       },
       "id": 40,
       "options": {
@@ -1143,7 +1306,7 @@
       "pluginVersion": "7.5.7",
       "targets": [
         {
-          "expr": "clamp_max(100 * (1 - (sum(rate(http_requests_total{endpoint=\"/orders\", status_code=~\"2..\"}[30d])) / sum(rate(http_requests_total{endpoint=\"/orders\"}[30d])))) / 0.001, 100)",
+          "expr": "clamp_max(100 * (1 - (sum(rate(kodekloud_http_requests_total{route=\"/\", status_code=~\"2..\"}[5m])) / sum(rate(kodekloud_http_requests_total{route=\"/\"}[5m])))) / 0.001, 100)",
           "interval": "",
           "legendFormat": "Consumed",
           "refId": "A"
@@ -1190,7 +1353,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 37
+        "y": 40
       },
       "id": 42,
       "options": {
@@ -1211,7 +1374,7 @@
       "pluginVersion": "7.5.7",
       "targets": [
         {
-          "expr": "clamp_min((0.001 - (1 - (sum(rate(http_requests_total{endpoint=\"/orders\", status_code=~\"2..\"}[30d])) / sum(rate(http_requests_total{endpoint=\"/orders\"}[30d]))))) / clamp_min(((1 - (sum(rate(http_requests_total{endpoint=\"/orders\", status_code=~\"2..\"}[1h])) / sum(rate(http_requests_total{endpoint=\"/orders\"}[1h])))) - (1 - (sum(rate(http_requests_total{endpoint=\"/orders\", status_code=~\"2..\"}[30d])) / sum(rate(http_requests_total{endpoint=\"/orders\"}[30d]))))), 0.000001) * 30, 0)",
+          "expr": "clamp_min((0.001 - (1 - (sum(rate(kodekloud_http_requests_total{route=\"/\", status_code=~\"2..\"}[5m])) / sum(rate(kodekloud_http_requests_total{route=\"/\"}[5m]))))) / clamp_min(((1 - (sum(rate(kodekloud_http_requests_total{route=\"/\", status_code=~\"2..\"}[5m])) / sum(rate(kodekloud_http_requests_total{route=\"/\"}[5m])))) - (1 - (sum(rate(kodekloud_http_requests_total{route=\"/\", status_code=~\"2..\"}[5m])) / sum(rate(kodekloud_http_requests_total{route=\"/\"}[5m]))))), 0.000001) * 30, 0)",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -1227,7 +1390,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 37
+        "y": 40
       },
       "id": 44,
       "mode": "markdown",
@@ -1274,7 +1437,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 45
+        "y": 57
       },
       "id": 30,
       "options": {
@@ -1293,7 +1456,7 @@
       "pluginVersion": "7.5.7",
       "targets": [
         {
-          "expr": "100 * sum(rate(http_requests_total{endpoint=\"/orders\", status_code=~\"2..\"}[5m])) / sum(rate(http_requests_total{endpoint=\"/orders\"}[5m]))",
+          "expr": "100 * sum(rate(kodekloud_http_requests_total{route=\"/\", status_code=~\"2..\"}[5m])) / sum(rate(kodekloud_http_requests_total{route=\"/\"}[5m]))",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -1319,7 +1482,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 54
+        "y": 56
       },
       "hiddenSeries": false,
       "id": 32,
@@ -1357,19 +1520,19 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "100 * sum(rate(http_requests_total{endpoint=\"/orders\", status_code=~\"2..\"}[1h])) / sum(rate(http_requests_total{endpoint=\"/orders\"}[1h]))",
+          "expr": "100 * sum(rate(kodekloud_http_requests_total{route=\"/\", status_code=~\"2..\"}[5m])) / sum(rate(kodekloud_http_requests_total{route=\"/\"}[5m]))",
           "interval": "",
           "legendFormat": "1h",
           "refId": "A"
         },
         {
-          "expr": "100 * sum(rate(http_requests_total{endpoint=\"/orders\", status_code=~\"2..\"}[6h])) / sum(rate(http_requests_total{endpoint=\"/orders\"}[6h]))",
+          "expr": "100 * sum(rate(kodekloud_http_requests_total{route=\"/\", status_code=~\"2..\"}[6h])) / sum(rate(kodekloud_http_requests_total{route=\"/\"}[6h]))",
           "interval": "",
           "legendFormat": "6h",
           "refId": "B"
         },
         {
-          "expr": "100 * sum(rate(http_requests_total{endpoint=\"/orders\", status_code=~\"2..\"}[24h])) / sum(rate(http_requests_total{endpoint=\"/orders\"}[24h]))",
+          "expr": "100 * sum(rate(kodekloud_http_requests_total{route=\"/\", status_code=~\"2..\"}[24h])) / sum(rate(kodekloud_http_requests_total{route=\"/\"}[24h]))",
           "interval": "",
           "legendFormat": "24h",
           "refId": "C"
@@ -1429,7 +1592,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 45
+        "y": 57
       },
       "id": 34,
       "panels": [],
@@ -1476,7 +1639,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 46
+        "y": 56
       },
       "id": 46,
       "options": {
@@ -1495,7 +1658,7 @@
       "pluginVersion": "7.5.7",
       "targets": [
         {
-          "expr": "clamp_max(100 * (sum(rate(order_processing_time_seconds_bucket{le=\"+Inf\"}[30d])) - sum(rate(order_processing_time_seconds_bucket{le=\"3.0\"}[30d]))) / (0.05 * sum(rate(order_processing_time_seconds_bucket{le=\"+Inf\"}[30d]))), 100)",
+          "expr": "0",
           "interval": "",
           "legendFormat": "Consumed",
           "refId": "A"
@@ -1511,7 +1674,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 46
+        "y": 56
       },
       "id": 48,
       "mode": "markdown",
@@ -1558,7 +1721,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 46
+        "y": 56
       },
       "id": 36,
       "options": {
@@ -1577,7 +1740,7 @@
       "pluginVersion": "7.5.7",
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum(rate(order_processing_time_seconds_bucket[5m])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(kodekloud_http_request_duration_seconds_bucket[5m])) by (le))",
           "interval": "",
           "legendFormat": "",
           "refId": "A"
@@ -1603,7 +1766,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 54
+        "y": 56
       },
       "hiddenSeries": false,
       "id": 38,
@@ -1641,19 +1804,19 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "histogram_quantile(0.95, sum(rate(order_processing_time_seconds_bucket[1h])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(kodekloud_http_request_duration_seconds_bucket[5m])) by (le))",
           "interval": "",
           "legendFormat": "1h p95",
           "refId": "A"
         },
         {
-          "expr": "histogram_quantile(0.95, sum(rate(order_processing_time_seconds_bucket[6h])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(kodekloud_http_request_duration_seconds_bucket[6h])) by (le))",
           "interval": "",
           "legendFormat": "6h p95",
           "refId": "B"
         },
         {
-          "expr": "histogram_quantile(0.95, sum(rate(order_processing_time_seconds_bucket[24h])) by (le))",
+          "expr": "histogram_quantile(0.95, sum(rate(kodekloud_http_request_duration_seconds_bucket[24h])) by (le))",
           "interval": "",
           "legendFormat": "24h p95",
           "refId": "C"
@@ -1722,74 +1885,6 @@
     },
     {
       "datasource": "Prometheus",
-      "description": "Success rate for order processing against 99.9% SLO target",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "max": 100,
-          "min": 95,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "orange",
-                "value": 99.5
-              },
-              {
-                "color": "yellow",
-                "value": 99.8
-              },
-              {
-                "color": "green",
-                "value": 99.9
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 6,
-        "x": 0,
-        "y": 24
-      },
-      "id": 30,
-      "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "text": {}
-      },
-      "pluginVersion": "7.5.7",
-      "targets": [
-        {
-          "expr": "100 * sum(rate(http_requests_total{endpoint=\"/orders\", status_code=~\"2..\"}[5m])) / sum(rate(http_requests_total{endpoint=\"/orders\"}[5m]))",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "title": "Order Processing Success",
-      "type": "gauge"
-    },
-    {
-      "datasource": "Prometheus",
       "description": "Current error budget consumption as a percentage of total monthly budget",
       "fieldConfig": {
         "defaults": {
@@ -1825,10 +1920,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 6,
-        "x": 6,
-        "y": 24
+        "h": 6,
+        "w": 8,
+        "x": 0,
+        "y": 41
       },
       "id": 40,
       "options": {
@@ -1847,7 +1942,7 @@
       "pluginVersion": "7.5.7",
       "targets": [
         {
-          "expr": "clamp_max(100 * (1 - (sum(rate(http_requests_total{endpoint=\"/orders\", status_code=~\"2..\"}[30d])) / sum(rate(http_requests_total{endpoint=\"/orders\"}[30d])))) / 0.001, 100)",
+          "expr": "clamp_max(100 * (1 - (sum(rate(kodekloud_http_requests_total{route=\"/\", status_code=~\"2..\"}[5m])) / sum(rate(kodekloud_http_requests_total{route=\"/\"}[5m])))) / 0.001, 100)",
           "interval": "",
           "legendFormat": "Consumed",
           "refId": "A"
@@ -1863,80 +1958,12 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 24
+        "y": 41
       },
       "id": 64,
       "mode": "markdown",
       "title": "Order Processing SLO Definition",
       "type": "text"
-    },
-    {
-      "datasource": "Prometheus",
-      "description": "Measures the 95th percentile order processing time against our 3s SLO target",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "max": 10,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 2
-              },
-              {
-                "color": "orange",
-                "value": 2.5
-              },
-              {
-                "color": "red",
-                "value": 3
-              }
-            ]
-          },
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 6,
-        "x": 0,
-        "y": 29
-      },
-      "id": 36,
-      "options": {
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true,
-        "text": {}
-      },
-      "pluginVersion": "7.5.7",
-      "targets": [
-        {
-          "expr": "histogram_quantile(0.95, sum(rate(order_processing_time_seconds_bucket[5m])) by (le))",
-          "interval": "",
-          "legendFormat": "",
-          "refId": "A"
-        }
-      ],
-      "title": "Order Processing Time",
-      "type": "gauge"
     },
     {
       "datasource": "Prometheus",
@@ -1975,10 +2002,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 6,
-        "x": 6,
-        "y": 29
+        "h": 6,
+        "w": 8,
+        "x": 0,
+        "y": 46
       },
       "id": 46,
       "options": {
@@ -1997,7 +2024,7 @@
       "pluginVersion": "7.5.7",
       "targets": [
         {
-          "expr": "clamp_max(100 * (sum(rate(order_processing_time_seconds_bucket{le=\"+Inf\"}[30d])) - sum(rate(order_processing_time_seconds_bucket{le=\"3.0\"}[30d]))) / (0.05 * sum(rate(order_processing_time_seconds_bucket{le=\"+Inf\"}[30d]))), 100)",
+          "expr": "clamp_max(100 * (sum(rate(kodekloud_http_request_duration_seconds_bucket{le=\"+Inf\"}[5m])) - sum(rate(kodekloud_http_request_duration_seconds_bucket{le=\"2.5\"}[5m]))) / (0.05 * sum(rate(kodekloud_http_request_duration_seconds_bucket{le=\"+Inf\"}[5m]))), 100)",
           "interval": "",
           "legendFormat": "Consumed",
           "refId": "A"
@@ -2013,7 +2040,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 29
+        "y": 46
       },
       "id": 66,
       "mode": "markdown",
@@ -2027,7 +2054,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 34
+        "y": 56
       },
       "id": 68,
       "panels": [],
@@ -2038,28 +2065,14 @@
       "content": "# Order Processing Error Budget Policy\n\n**SLO: 99.9% order processing success rate (monthly)**\n\n**Error Budget: 0.1% = 43.2 minutes of processing failures per month**\n\n## Actions by Consumption Level\n\n### When 50% of the monthly error budget is consumed:\n- Investigate database and worker queue performance metrics\n- Enhance monitoring of order processing pipeline\n- Alert engineering leadership about potential issues\n\n### When 75% of the budget is consumed:\n- Deploy only critical order processing-related updates\n- Add manual verification step to all deployments\n- Increase worker capacity for order processing\n\n### When 100% of the budget is consumed:\n- Freeze all changes to order processing system\n- Invoke incident response process\n- Switch to simplified order processing flow\n- Require executive approval to resume normal operations",
       "datasource": null,
       "gridPos": {
-        "h": 12,
+        "h": 8,
         "w": 12,
         "x": 0,
-        "y": 35
+        "y": 57
       },
       "id": 44,
       "mode": "markdown",
       "title": "Success Rate Error Budget Policy",
-      "type": "text"
-    },
-    {
-      "content": "# Order Processing Time Budget Policy\n\n**SLO: 95% of orders processed within 3 seconds**\n\n**Error Budget: 5% of orders can exceed the 3-second threshold**\n\n## Actions by Consumption Level\n\n### When 50% of the latency budget is consumed:\n- Analyze performance metrics to identify bottlenecks\n- Review recent code changes affecting order processing\n- Consider optimizing database queries\n\n### When 75% of the latency budget is consumed:\n- Scale up worker resources for order processing\n- Implement queue prioritization for orders\n- Add performance alerts for critical processing paths\n\n### When 100% of the latency budget is consumed:\n- Roll back recent changes affecting processing time\n- Implement circuit breakers to prevent cascading failures\n- Consider temporary feature reduction to improve core functionality\n- Daily status updates to leadership until resolved",
-      "datasource": null,
-      "gridPos": {
-        "h": 12,
-        "w": 12,
-        "x": 12,
-        "y": 35
-      },
-      "id": 48,
-      "mode": "markdown",
-      "title": "Processing Time Budget Policy",
       "type": "text"
     }
   ],

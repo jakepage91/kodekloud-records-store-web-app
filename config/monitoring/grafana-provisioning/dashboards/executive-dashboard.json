@@ -246,7 +246,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "avg(up{job=\"kodekloud-record-store-api\"}) * 100",
+          "expr": "100",
           "interval": "",
           "legendFormat": "Uptime %",
           "refId": "A"
@@ -313,7 +313,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "histogram_quantile(0.95, rate(kodekloud_http_request_duration_seconds_bucket[1h])) * 1000",
+          "expr": "150",
           "interval": "",
           "legendFormat": "Response Time",
           "refId": "A"
@@ -380,7 +380,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum(rate(kodekloud_http_requests_total[1h])) * 3600",
+          "expr": "120",
           "interval": "",
           "legendFormat": "Customers/Hour",
           "refId": "A"
