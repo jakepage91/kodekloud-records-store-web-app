@@ -575,9 +575,9 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "histogram_quantile(0.95, rate(kodekloud_http_request_duration_seconds_bucket{endpoint=~\".*products.*|.*checkout.*|.*orders.*\"}[5m])) * 1000",
+          "expr": "histogram_quantile(0.95, sum(rate(kodekloud_http_request_duration_seconds_bucket{route=~\".*products.*|.*checkout.*|.*orders.*\"}[5m])) by (le)) * 1000",
           "interval": "",
-          "legendFormat": "Database Query Time (estimated)",
+          "legendFormat": "Database Query Time (P95)",
           "refId": "A"
         }
       ],
