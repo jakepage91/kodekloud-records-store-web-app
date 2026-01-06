@@ -16,5 +16,5 @@ setuptools==80.9.0
 
 # Additional testing dependencies for demos
 pytest==8.4.2
-pytest-asyncio==1.2.0
+pytest-asyncio==1.3.0
 httpx==0.28.1
